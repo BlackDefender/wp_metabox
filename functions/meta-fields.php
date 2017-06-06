@@ -81,7 +81,12 @@ $some_meta_fields = array(
         'id' => 'pdf',
         'type' => 'pdf'
     ),
-	array(
+    array(
+        'label' => 'Визуальный редактор',
+        'id' => 'visual_editor', // только нижнее подчеркивание
+        'type' => 'wysiwyg'
+    ),
+    array(
         'label' => 'Смешанный массив',
         'desc'  => 'Описание для поля.',
         'id'    => 'my_combo', // даем идентификатор.
@@ -219,6 +224,9 @@ function show_custom_metabox($post, $meta_fields) {
                     <button class="button add-pdf add-file-btn">Добавить/изменить PDF</button>
                 </div>
                 <?php
+                break;
+	    case 'wysiwyg':
+                wp_editor($meta, $field['id']);
                 break;
             case 'posts-list':
                 $posts_list = new WP_Query(array('post_type' => $field['target_post_type']));
