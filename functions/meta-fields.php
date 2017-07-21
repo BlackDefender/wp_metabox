@@ -244,6 +244,14 @@ function show_custom_metabox($post, $meta_fields) {
             case 'combo':
                 $internal_items_json = json_encode($field['internal-items']);
                 if($meta){
+		            foreach ($meta as $combo_item_index => $combo_item_val){
+                        foreach ($combo_item_val as $i => $val){
+                            if($field['data-description'][$i]['type'] == 'image'){
+                                $src = wp_get_attachment_image_src($val)[0];
+                                $meta[$combo_item_index][$i] = array('id' => $val, 'src' => $src);
+                            }
+                    	}
+                    }
                     $meta_json = json_encode($meta);
                 }else{
                     $meta_json = '';
