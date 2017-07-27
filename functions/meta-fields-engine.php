@@ -12,142 +12,28 @@ function add_metabox_scripts($hook) {
 add_action('admin_enqueue_scripts', 'add_metabox_scripts');
 
 
-// описание полей
-$some_meta_fields = array(
-    array(
-        'label' => 'Текст заголовка',
-        'type'  => 'header'// большой заголовок посреди таблицы
-    ),
-	array(
-		'label' => 'Текстовое поле',
-		'desc'  => 'Описание для поля.',
-		'id'    => 'mytextinput', // даем идентификатор.
-		'type'  => 'text'  // Указываем тип поля.
-	),
-	array(
-		'label' => 'Большое текстовое поле',
-		'desc'  => 'Описание для поля.',
-		'id'    => 'mytextarea',  //айдишник элемента, у инпутов используется в качестве имени. нужен при выборке метаданных
-		'type'  => 'textarea'  // Указываем тип поля.
-	),
-	array(
-		'label' => 'Чекбоксы (флажки)',
-		'desc'  => 'Описание для поля.',
-		'id'    => 'mycheckbox',  // даем идентификатор.
-		'type'  => 'checkbox'  // Указываем тип поля.
-	),
-	array(
-		'label' => 'Всплывающий список',
-		'desc'  => 'Описание для поля.',
-		'id'    => 'myselect',
-		'type'  => 'select',
-		'options' => array (  // Параметры, всплывающие данные
-			'one' => array (
-				'label' => 'Вариант 1',  // Название поля
-				'value' => '1'  // Значение
-			),
-			'two' => array (
-				'label' => 'Вариант 2',  // Название поля
-				'value' => '2'  // Значение
-			),
-			'three' => array (
-				'label' => 'Вариант 3',  // Название поля
-				'value' => '3'  // Значение
-			)
-		)
-	),
-	array(
-		'label' => 'Список заголовков постов',
-		'desc'  => '',
-		'id'    => 'author',
-		'type'  => 'posts-list',
-		'target_post_type' => 'workers',// тип постов для вывода
-		'intro_text' => 'Вступительный текст для первого пункта меню'
-	),
-
-	array(
-		'label' => 'Изображение',
-		'desc'  => 'Выберите изображение',
-		'id'    => 'my_image',  //айдишник элемента, у инпутов используется в качестве имени. нужен при выборке метаданных
-		'type'  => 'image'  // Указываем тип поля.
-	),
-	array(
-		'label' => 'Аудиозапись',
-		'id' => 'audio',
-		'type' => 'audio'
-	),
-    array(
-        'label' => 'PDF-файл',
-        'id' => 'pdf',
-        'type' => 'pdf'
-    ),
-    array(
-        'label' => 'Визуальный редактор',
-        'id' => 'visual_editor', // только нижнее подчеркивание
-        'type' => 'wysiwyg'
-    ),
-    array(
-        'label' => 'Смешанный массив',
-        'desc'  => 'Описание для поля.',
-        'id'    => 'my_combo', // даем идентификатор.
-        'type'  => 'combo',  // Указываем тип поля.
-        'display' => 'list', // Способ отображения: list || gallery
-        'internal-items' => array(
-            array(
-                'type' => 'text',
-                'label' => 'Текстовый ввод',
-            ),
-            array(
-                'type' => 'textarea',
-                'label' => 'Текстовое поле'
-            ),
-            array(
-                'type' => 'image',
-                'label' => 'Изображение'
-            ),
-            array(
-                'type' => 'audio',
-                'label' => 'Аудиозапись'
-            ),
-            array(
-                'type' => 'pdf',
-                'label' => 'PDF'
-            ),
-        )
-    ),
-);
-
-
+require_once 'meta-fields-data.php';
 
 function add_custom_meta_boxes(){
 	// подключение metabox к конкретному посту
     global $post;
-    if(!empty($post)) {
-        if( $post->ID == 2 )
-        {
-            global $some_meta_fields;
+	global $meta_boxes;
+    foreach ($meta_boxes as $box){
+        if($post->post_type == $box['post_type']){
+            if(isset($box['post_id']) && $box['post_id'] != $post->ID) continue;
             add_meta_box(
-                'front_page_meta_box', // Идентификатор(id)
-                'Тексты для главной страницы', // Заголовок области с мета-полями(title)
+                $box['post_type'].'_meta_box', // Идентификатор(id)
+                isset($box['title']) ? $box['title'] : 'Данные для страницы', // Заголовок области с мета-полями(title)
                 'show_custom_metabox', // Вызов(callback)
-                'page', // Где будет отображаться наше поле, в нашем случае на главной странице
+                $box['post_type'], // Где будет отображаться наше поле, в нашем случае на главной странице
                 'normal',
                 'high',
-                $some_meta_fields);
+                $box['meta_fields']);
+            break;
         }
     }
-
-    global $some_meta_fields;
-    add_meta_box(
-        'services_preview_meta_box', // Идентификатор(id)
-        'Тексты для общей страницы услуг', // Заголовок области с мета-полями(title)
-        'show_custom_metabox', // Вызов(callback)
-        'post', // Где будет отображаться наше поле, в нашем случае в Записях
-        'normal',
-        'high',
-	    $some_meta_fields);
 }
-add_action('add_meta_boxes', 'add_custom_meta_boxes'); // Запускаем функцию
+add_action('add_meta_boxes', 'add_custom_meta_boxes');
 
 
 // Отрисовка метаполей
@@ -287,19 +173,13 @@ function save_custom_meta_fields($post_id){
     $fields = NULL;
     $post_type = get_post_type($post_id);
 
-    switch ($post_type) {
-        case 'page':
-            switch($post_id){
-                case 2:
-                    global $some_meta_fields;
-                    $fields = $some_meta_fields;
-                    break;
-            }
+    global $meta_boxes;
+    foreach ($meta_boxes as $box){
+        if($post_type == $box['post_type']){
+            if(isset($box['post_id']) && $box['post_id'] != $post_id) continue;
+            $fields = $box['meta_fields'];
             break;
-        case 'post':
-            global $some_meta_fields;
-            $fields = $some_meta_fields;
-            break;
+        }
     }
 
     if(is_null($fields)){
@@ -321,4 +201,3 @@ function save_custom_meta_fields($post_id){
     }
 }
 add_action('save_post', 'save_custom_meta_fields'); // Запускаем функцию сохранения
-
