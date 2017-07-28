@@ -97,42 +97,42 @@ input.filename-input{
     border-color: #985f0d;
 }
 
-/* combo display => list */
-.combo.list li{
+/* combo display => stack */
+.combo.stack li{
     margin: 0 0 30px;
     box-sizing: border-box;
 }
-.combo.list li:nth-of-type(n+2){
+.combo.stack li:nth-of-type(n+2){
     border-top: 1px solid #A7A7A7;
     padding: 30px 0 0;
 }
-.combo.list li .combo-item-field-wrap .combo-item-field-title{
+.combo.stack li .combo-item-field-wrap .combo-item-field-title{
     width: 20%;
     float: left;
     padding: 0 10px 0 0;
     box-sizing: border-box;
 }
-.combo.list li .combo-item-field-wrap .combo-item-field-body{
+.combo.stack li .combo-item-field-wrap .combo-item-field-body{
     width: 80%;
     float: right;
 }
-.combo.list li .combo-item-field-wrap .combo-item-field-body:after{
+.combo.stack li .combo-item-field-wrap .combo-item-field-body:after{
     content: '';
     display: block;
     clear: both;
 }
-.combo.list li .remove-combo-item{
+.combo.stack li .remove-combo-item{
     display: block;
     margin: 25px 0 0 auto;
 }
 
-/* combo display => gallery */
-.combo.gallery:after{
+/* combo display => line */
+.combo.line:after{
     content: '';
     display: block;
     clear: both;
 }
-.combo.gallery li{
+.combo.line li{
     float: left;
     width: calc(25% - 24px);
     min-width: 250px;
@@ -140,23 +140,25 @@ input.filename-input{
     border: 1px solid #dddddd;
     padding: 8px 0 0;
 }
-.combo.gallery li .combo-item-field-wrap{
+.combo.line li .combo-item-field-wrap{
     padding: 3px;
     border-bottom: 1px solid #e0e0e0;
 }
-.combo.gallery li .combo-item-field-wrap .combo-item-field-title{
+.combo.line li .combo-item-field-wrap .combo-item-field-title{
     margin: 0 0 5px;
 }
-.combo.gallery li .combo-item-field-wrap .combo-item-field-body .filename-input{
+.combo.line li .combo-item-field-wrap .combo-item-field-body .filename-input{
     width: 100%;
     float: none;
 }
-.combo.gallery li .combo-item-field-wrap .combo-item-field-body .add-file-btn{
+.combo.line li .combo-item-field-wrap .combo-item-field-body .add-file-btn{
     display: block;
     margin: 8px auto 5px;
     float: none;
 }
-.combo.gallery li .remove-combo-item {
+.combo.line li .remove-combo-item {
     display: block;
     margin: 10px auto;
 }
+
+

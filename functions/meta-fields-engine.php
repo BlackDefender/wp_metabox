@@ -2,7 +2,7 @@
 /* Пользовательские поля в посте */
 
 
-// подключение скриптов и стилей
+// подключение скриптов для галереи
 function add_metabox_scripts($hook) {
 	if ( 'post.php' == $hook || 'post-new.php' == $hook ) {
 		wp_enqueue_script('metabox-assets', get_template_directory_uri() . '/functions/assets/metabox.js', array('jquery', 'jquery-ui-sortable'));
@@ -14,10 +14,10 @@ add_action('admin_enqueue_scripts', 'add_metabox_scripts');
 
 require_once 'meta-fields-data.php';
 
-function add_custom_meta_boxes(){
+function add_custom_meta_box(){
 	// подключение metabox к конкретному посту
     global $post;
-	global $meta_boxes;
+    global $meta_boxes;
     foreach ($meta_boxes as $box){
         if($post->post_type == $box['post_type']){
             if(isset($box['post_id']) && $box['post_id'] != $post->ID) continue;
@@ -33,7 +33,7 @@ function add_custom_meta_boxes(){
         }
     }
 }
-add_action('add_meta_boxes', 'add_custom_meta_boxes');
+add_action('add_meta_boxes', 'add_custom_meta_box'); // Запускаем функцию
 
 
 // Отрисовка метаполей
@@ -111,9 +111,6 @@ function show_custom_metabox($post, $meta_fields) {
                 </div>
                 <?php
                 break;
-	    case 'wysiwyg':
-                wp_editor($meta, $field['id']);
-                break;
             case 'posts-list':
                 $posts_list = new WP_Query(array('post_type' => $field['target_post_type']));
                 if($posts_list->have_posts()){
@@ -127,16 +124,19 @@ function show_custom_metabox($post, $meta_fields) {
                     echo '</select>';
                 }
                 break;
+            case 'wysiwyg':
+                wp_editor($meta, $field['id']);
+                break;
             case 'combo':
-                $internal_items_json = json_encode($field['internal-items']);
+                $data_description = json_encode($field['data-description']);
                 if($meta){
-		            foreach ($meta as $combo_item_index => $combo_item_val){
+                    foreach ($meta as $combo_item_index => $combo_item_val){
                         foreach ($combo_item_val as $i => $val){
                             if($field['data-description'][$i]['type'] == 'image'){
                                 $src = wp_get_attachment_image_src($val)[0];
                                 $meta[$combo_item_index][$i] = array('id' => $val, 'src' => $src);
                             }
-                    	}
+                        }
                     }
                     $meta_json = json_encode($meta);
                 }else{
@@ -144,11 +144,11 @@ function show_custom_metabox($post, $meta_fields) {
                 }
                 ?>
                 <ul class="combo <?= $field['display'] ?>"
-                    data-internal-items='<?= $internal_items_json ?>'
+                    data-data-description='<?= $data_description ?>'
                     data-meta='<?= $meta_json ?>'
                     data-id="<?= $field['id'] ?>"
                     data-get-image-url="<?= get_template_directory_uri(); ?>/functions/assets/get-image-thumbnail-url.php"></ul>
-                <button class="button add-combo-item">Добавить элемент</button>
+                <button class="button add-combo-item-btn <?= $field['behavior']; ?>">Добавить элемент</button>
                 <?php
                 break;
         }
@@ -201,3 +201,4 @@ function save_custom_meta_fields($post_id){
     }
 }
 add_action('save_post', 'save_custom_meta_fields'); // Запускаем функцию сохранения
+

@@ -16,10 +16,7 @@ jQuery(function($) {
         file_frame.on( 'select', function() {
             var attachment = file_frame.state().get('selection').first().toJSON();
             if(attachment.type !== 'image') return;
-            var imageURL = '';
-            if(attachment.sizes.thumbnail) imageURL = attachment.sizes.thumbnail.url;
-            else if(attachment.sizes.medium) imageURL = attachment.sizes.medium.url;
-            else if(attachment.sizes.full) imageURL = attachment.sizes.full.url;
+            var imageURL = getAttachedImageURL(attachment);
             that.parent().find('input:hidden').attr('value', attachment.id);
             that.css('background-image', 'url('+imageURL+')');
         });
@@ -73,51 +70,24 @@ jQuery(function($) {
     if(document.querySelector('.combo')){
         Array.prototype.forEach.call(document.querySelectorAll('.combo'), function (currentCombo) {
             var $currentCombo = $(currentCombo);
-            var internalItems = $currentCombo.data('internal-items');
-            currentCombo.internalTypes = internalItems;
-            var currentComboItemHTML = '<li>';
-            internalItems.forEach(function (item) {
-                currentComboItemHTML += '<div class="combo-item-field-wrap">';
-                    currentComboItemHTML += '<div class="combo-item-field-title">'+ item.label +'</div>';
-                    currentComboItemHTML += '<div class="combo-item-field-body">';
-                    switch(item.type){
-                        case 'text':
-                            currentComboItemHTML += '<input type="text">';
-                            break;
-                        case 'textarea':
-                            currentComboItemHTML += '<textarea></textarea>';
-                            break;
-                        case 'image':
-                            currentComboItemHTML += '<input type="hidden"><div class="image-preview add-image"></div>';
-                            break;
-                        case 'audio':
-                            currentComboItemHTML += '<input type="hidden">' +
-                                '<input type="text" disabled class="no-index filename-input">' +
-                                '<button class="button add-audio add-file-btn">Добавить/изменить аудиозапись</button>';
-                            break;
-                        case 'pdf':
-                            currentComboItemHTML += '<input type="hidden">' +
-                                '<input class="no-index filename-input" type="text" disabled>' +
-                                '<button class="button add-pdf add-file-btn">Добавить/изменить PDF</button>';
-                            break;
-                    }
-                    currentComboItemHTML += '</div>';
-                currentComboItemHTML += '</div>';
-            });
-            currentComboItemHTML += '<button class="button remove-combo-item">Удалить элемент</button></li>';
-            currentCombo.$item = $(currentComboItemHTML);
+            var dataDescription = $currentCombo.data('data-description');
+            currentCombo.$emptyItem = getComboJqueryEmptyItem(dataDescription);
+            deserializeComboData($currentCombo, dataDescription);
+            makeSortable($currentCombo);
+        });
 
-
-            var data = $currentCombo.data('meta');
+        function deserializeComboData($combo, dataDescription) {
+            var data = $combo.data('meta');
             if(data != ''){
-                var getImageUrl = $currentCombo.data('get-image-url');
+                var getImageUrl = $combo.data('get-image-url');
+                console.log(getImageUrl);
                 data.forEach(function (value, index){
-                    var $newComboItemObj = addComboItem($currentCombo, false);
+                    var $newComboItemObj = getNewJqueryComboItem($combo);
                     var $newComboItemObjFields = $newComboItemObj.find('.combo-item-field-body');
                     $newComboItemObjFields.each(function (index) {
                         if(value[index] !== '') {
                             var $field = $(this);
-                            switch (internalItems[index].type) {
+                            switch (dataDescription[index].type) {
                                 case 'text':
                                     $field.find('input').val(value[index]);
                                     break;
@@ -138,34 +108,106 @@ jQuery(function($) {
                             }
                         }
                     });
+                    $combo.append($newComboItemObj);
                 });
             }
-            makeSortable($currentCombo);
-        });
+        }
 
-        function addComboItem($currentCombo, animate) {
+        function getComboJqueryEmptyItem(dataDescription) {
+            var comboItemTemplateHTML = '<li>';
+            dataDescription.forEach(function (item) {
+                comboItemTemplateHTML += '<div class="combo-item-field-wrap">';
+                comboItemTemplateHTML += '<div class="combo-item-field-title">'+ item.label +'</div>';
+                comboItemTemplateHTML += '<div class="combo-item-field-body">';
+                switch(item.type){
+                    case 'text':
+                        comboItemTemplateHTML += '<input type="text">';
+                        break;
+                    case 'textarea':
+                        comboItemTemplateHTML += '<textarea></textarea>';
+                        break;
+                    case 'image':
+                        comboItemTemplateHTML += '<input type="hidden"><div class="image-preview add-image"></div>';
+                        break;
+                    case 'audio':
+                        comboItemTemplateHTML += '<input type="hidden">' +
+                            '<input type="text" disabled class="no-index filename-input">' +
+                            '<button class="button add-audio add-file-btn">Добавить/изменить аудиозапись</button>';
+                        break;
+                    case 'pdf':
+                        comboItemTemplateHTML += '<input type="hidden">' +
+                            '<input class="no-index filename-input" type="text" disabled>' +
+                            '<button class="button add-pdf add-file-btn">Добавить/изменить PDF</button>';
+                        break;
+                }
+                comboItemTemplateHTML += '</div>';
+                comboItemTemplateHTML += '</div>';
+            });
+            comboItemTemplateHTML += '<button class="button remove-combo-item">Удалить элемент</button></li>';
+            return $(comboItemTemplateHTML);
+        }
+
+        function getNewJqueryComboItem($currentCombo){
             var itemIndex = $currentCombo.children('li').length;
             var id = $currentCombo.data('id');
-            var $newItem = $currentCombo[0].$item.clone();
+            var $newItem = $currentCombo[0].$emptyItem.clone();
             $newItem.find('input:not(.no-index), textarea').each(function (inputIndex, item) {
                 item.name = id + '[' + itemIndex + '][' + inputIndex + ']';
             });
-            $currentCombo.append($newItem);
-            if($currentCombo.hasClass('list') && animate){
+            return $newItem;
+        }
+
+        function appendNewItemToComboAnimated($combo, $newItem){
+            $combo.append($newItem);
+            if($combo.hasClass('stack')){
                 var itemHeight = $newItem[0].scrollHeight + 'px';
                 $newItem.css({ opacity: 0, height: 0, width: 0 });
                 $newItem.animate({ opacity: 1, height: itemHeight, width: '100%' }, 300, function () {
                     $newItem.css({ height: 'auto' });
                 });
             }
-            return $newItem;
         }
 
-        $('.add-combo-item').click(function (e) {
+        $('.add-combo-item-btn.list').click(function (e) {
             e.preventDefault();
             var $currentCombo = $(this).parent().find('.combo');
-            addComboItem($currentCombo, true);
+            var $newcurrentComboItem = getNewJqueryComboItem($currentCombo);
+            appendNewItemToComboAnimated($currentCombo, $newcurrentComboItem);
         });
+
+        $('.add-combo-item-btn.gallery').click(function (e) {
+            e.preventDefault();
+
+            var $currentCombo = $(this).parent().find('.combo');
+
+            var that = $(this);
+            if (file_frame) file_frame.close();
+            file_frame = wp.media({
+                title: 'Добавить изображения',
+                button:{
+                    text: 'Добавить изображения'
+                },
+                multiple: true
+            });
+            file_frame.on( 'select', function() {
+                var attachments = file_frame.state().get('selection').toJSON();
+                attachments.forEach(function (attachment) {
+                    if(attachment.type !== 'image') return false;
+                    var imageURL = getAttachedImageURL(attachment);
+                    var $newcurrentComboItem = getNewJqueryComboItem($currentCombo);
+
+                    $newcurrentComboItem.find('.image-preview').eq(0).css('background-image', 'url('+imageURL+')')
+                        .parent().find('input[type="hidden"]').attr('value', attachment.id);
+
+                    appendNewItemToComboAnimated($currentCombo, $newcurrentComboItem);
+                });
+            });
+            file_frame.open();
+
+        });
+
+
+
 
         $(document).on('click', '.remove-combo-item', function(e) {
             e.preventDefault();
@@ -177,6 +219,14 @@ jQuery(function($) {
 
     }
 
+    function getAttachedImageURL(attachment) {
+        var imageURL = '';
+        if(attachment.sizes.thumbnail) imageURL = attachment.sizes.thumbnail.url;
+        else if(attachment.sizes.medium) imageURL = attachment.sizes.medium.url;
+        else if(attachment.sizes.large) imageURL = attachment.sizes.medium.url;
+        else if(attachment.sizes.full) imageURL = attachment.sizes.full.url;
+        return imageURL;
+    }
 
     /* функции перетаскивания */
     function makeSortable($list) {
@@ -187,6 +237,7 @@ jQuery(function($) {
             }
         });
     }
+
     function resetIndex($list) {
         $list.children().each(function(i) {
             $(this).find('input:not(.no-index), textarea').each(function () {
