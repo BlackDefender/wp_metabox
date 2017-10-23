@@ -20,7 +20,13 @@ function add_custom_meta_box(){
     global $meta_boxes;
     foreach ($meta_boxes as $box){
         if($post->post_type == $box['post_type']){
-            if(isset($box['post_id']) && $box['post_id'] != $post->ID) continue;
+            if(isset($box['post_id'])){
+                if(is_array($box['post_id'])){
+                    if(!in_array($post->ID, $box['post_id'])) continue;
+                }else{
+                    if($box['post_id'] != $post->ID) continue;
+                }
+            }
             add_meta_box(
                 $box['post_type'].'_meta_box', // Идентификатор(id)
                 isset($box['title']) ? $box['title'] : 'Данные для страницы', // Заголовок области с мета-полями(title)
@@ -176,7 +182,13 @@ function save_custom_meta_fields($post_id){
     global $meta_boxes;
     foreach ($meta_boxes as $box){
         if($post_type == $box['post_type']){
-            if(isset($box['post_id']) && $box['post_id'] != $post_id) continue;
+            if(isset($box['post_id'])){
+                if(is_array($box['post_id'])){
+                    if(!in_array($post_id, $box['post_id'])) continue;
+                }else{
+                    if($box['post_id'] != $post_id) continue;
+                }
+            }
             $fields = $box['meta_fields'];
             break;
         }
