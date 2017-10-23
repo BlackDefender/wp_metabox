@@ -134,6 +134,12 @@ $meta_boxes = array(
         'title' => 'Тексты для главной страницы',
     ),
     array(
+        'post_type' => 'page',
+        'post_id' => array(3, 4, 5),
+        'meta_fields' => $some_meta_fields,
+        'title' => 'Тексты для страницы',
+    ),
+    array(
         'post_type' => 'post',
         'meta_fields' => $some_meta_fields,
         'title' => 'Тексты для страницы поста',
