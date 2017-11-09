@@ -142,6 +142,9 @@ function show_custom_metabox($post, $meta_fields) {
                                 $src = wp_get_attachment_image_src($val)[0];
                                 $meta[$combo_item_index][$i] = array('id' => $val, 'src' => $src);
                             }
+			    if($field['data-description'][$i]['type'] == 'text' || $field['data-description'][$i]['type'] == 'textarea'){
+                                $meta[$combo_item_index][$i] = esc_attr($meta[$combo_item_index][$i]);
+                            }
                         }
                     }
                     $meta_json = json_encode($meta);
