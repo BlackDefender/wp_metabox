@@ -73,8 +73,7 @@ function show_custom_metabox($post, $meta_fields) {
                 break;
 
             case 'checkbox':
-                echo '<input type="checkbox" name="'.$field['id'].'" id="'.$field['id'].'" ',$meta ? ' checked="checked"' : '','/>
-                    <label for="'.$field['id'].'">'.$field['desc'].'</label>';
+                echo '<input type="checkbox" name="'.$field['id'].'" id="'.$field['id'].'" ',$meta ? ' checked="checked"' : '','/>';
                 break;
 
             case 'select':
