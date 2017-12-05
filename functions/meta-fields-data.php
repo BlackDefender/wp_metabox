@@ -131,17 +131,17 @@ $meta_boxes = array(
         'post_type' => 'page',
         'post_id' => '2',
         'meta_fields' => $some_meta_fields,
-        'title' => 'Тексты для главной страницы',
+        'title' => 'Данные для страницы',
     ),
     array(
         'post_type' => 'page',
         'post_id' => array(3, 4, 5),
         'meta_fields' => $some_meta_fields,
-        'title' => 'Тексты для страницы',
+        'title' => 'Данные для страницы',
     ),
     array(
         'post_type' => 'post',
         'meta_fields' => $some_meta_fields,
-        'title' => 'Тексты для страницы поста',
+        'title' => 'Данные для страницы',
     ),
 );
