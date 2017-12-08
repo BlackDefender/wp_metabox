@@ -70,15 +70,15 @@ function show_custom_metabox($post, $meta_fields) {
         echo '</th><td>';
         switch($field['type']) {
             case 'text':
-                echo '<input type="text" name="'.$field['id'].'" id="'.$field['id'].'" value="'.esc_attr($meta).'" size="98" />';
+                echo '<input type="text" name="'.$field['id'].'" id="'.$field['id'].'" value="'.format_to_edit($meta).'" size="98" />';
                 break;
 
             case 'textarea':
-                echo '<textarea name="'.$field['id'].'" id="'.$field['id'].'" cols="100" rows="4">'.esc_attr($meta).'</textarea>';
+                echo '<textarea name="'.$field['id'].'" id="'.$field['id'].'" cols="100" rows="4">'.format_to_edit($meta).'</textarea>';
                 break;
 
             case 'checkbox':
-                echo '<input type="checkbox" name="'.$field['id'].'" id="'.$field['id'].'" ',$meta ? ' checked="checked"' : '','/>';
+                echo '<input type="checkbox" value="1" name="'.$field['id'].'" id="'.$field['id'].'" ',$meta ? ' checked="checked"' : '','/>';
                 break;
 
             case 'select':
