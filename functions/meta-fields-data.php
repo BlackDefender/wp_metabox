@@ -144,4 +144,10 @@ $meta_boxes = array(
         'meta_fields' => $some_meta_fields,
         'title' => 'Данные для страницы',
     ),
+    array(
+        'template' => 'page-sample.php',
+        'post_type' => 'page',
+        'meta_fields' => $some_meta_fields,
+        'title' => 'Данные для страницы',
+    ),
 );
