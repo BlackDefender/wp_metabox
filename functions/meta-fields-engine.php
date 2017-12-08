@@ -15,7 +15,7 @@ add_action('admin_enqueue_scripts', 'add_metabox_scripts');
 require_once 'meta-fields-data.php';
 
 function add_custom_meta_box(){
-	// подключение metabox к конкретному посту
+    // подключение metabox к конкретному посту
     global $post;
     global $meta_boxes;
     foreach ($meta_boxes as $box){
@@ -27,6 +27,11 @@ function add_custom_meta_box(){
                     if($box['post_id'] != $post->ID) continue;
                 }
             }
+
+	    if(isset($box['template']) && $box['template'] != get_post_meta( $post->ID, '_wp_page_template', true )){
+                continue;
+            }
+
             add_meta_box(
                 $box['post_type'].'_meta_box', // Идентификатор(id)
                 isset($box['title']) ? $box['title'] : 'Данные для страницы', // Заголовок области с мета-полями(title)
