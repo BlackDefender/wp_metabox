@@ -196,6 +196,9 @@ function save_custom_meta_fields($post_id){
                     if($box['post_id'] != $post_id) continue;
                 }
             }
+	    if(isset($box['template']) && $box['template'] != get_post_meta( $post_id, '_wp_page_template', true )){
+                continue;
+            }
             $fields = $box['meta_fields'];
             break;
         }
