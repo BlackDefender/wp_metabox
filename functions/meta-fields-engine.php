@@ -146,9 +146,6 @@ function show_custom_metabox($post, $meta_fields) {
                                 $src = wp_get_attachment_image_src($val)[0];
                                 $meta[$combo_item_index][$i] = array('id' => $val, 'src' => $src);
                             }
-			    if($field['data-description'][$i]['type'] == 'text' || $field['data-description'][$i]['type'] == 'textarea'){
-                                $meta[$combo_item_index][$i] = esc_attr($meta[$combo_item_index][$i]);
-                            }
                         }
                     }
                     $meta_json = json_encode($meta);
@@ -158,10 +155,10 @@ function show_custom_metabox($post, $meta_fields) {
                 ?>
                 <ul class="combo <?= $field['display'] ?>"
                     data-data-description='<?= $data_description ?>'
-                    data-meta='<?= $meta_json ?>'
                     data-id="<?= $field['id'] ?>"
                     data-get-image-url="<?= get_template_directory_uri(); ?>/functions/assets/get-image-thumbnail-url.php"></ul>
                 <button class="button add-combo-item-btn <?= $field['behavior']; ?>">Добавить элемент</button>
+                <script type="combo-data"><?= $meta_json; ?></script>
                 <?php
                 break;
         }

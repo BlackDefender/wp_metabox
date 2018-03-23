@@ -77,10 +77,10 @@ jQuery(function($) {
         });
 
         function deserializeComboData($combo, dataDescription) {
-            var data = $combo.data('meta');
+            var data = $combo.parent().find('script[type="combo-data"]').text();
             if(data != ''){
+                data = JSON.parse(data);
                 var getImageUrl = $combo.data('get-image-url');
-                console.log(getImageUrl);
                 data.forEach(function (value, index){
                     var $newComboItemObj = getNewJqueryComboItem($combo);
                     var $newComboItemObjFields = $newComboItemObj.find('.combo-item-field-body');
