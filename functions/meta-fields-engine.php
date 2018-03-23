@@ -143,7 +143,11 @@ function show_custom_metabox($post, $meta_fields) {
                     foreach ($meta as $combo_item_index => $combo_item_val){
                         foreach ($combo_item_val as $i => $val){
                             if($field['data-description'][$i]['type'] == 'image'){
-                                $src = wp_get_attachment_image_src($val)[0];
+                                if($val !== ''){
+                                    $src = wp_get_attachment_image_src($val)[0];
+                                }else{
+                                    $src = '';
+                                }
                                 $meta[$combo_item_index][$i] = array('id' => $val, 'src' => $src);
                             }
                         }

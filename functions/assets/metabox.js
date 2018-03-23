@@ -95,8 +95,10 @@ jQuery(function($) {
                                     $field.find('textarea').val(value[index]);
                                     break;
                                 case 'image':
-                                    $field.find('input[type="hidden"]').val(value[index]['id']);
-                                    $field.find('.image-preview').css('background-image', 'url(' + value[index]['src'] + ')');
+                                    if(value[index]['id'] !== ''){
+                                        $field.find('input[type="hidden"]').val(value[index]['id']);
+                                        $field.find('.image-preview').css('background-image', 'url(' + value[index]['src'] + ')');
+                                    }
                                     break;
                                 case 'audio':
                                 case 'pdf':
