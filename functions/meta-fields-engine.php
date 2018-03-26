@@ -55,7 +55,7 @@ function show_custom_metabox($post, $meta_fields) {
     foreach ($meta_fields['args'] as $field) {
         // вывод заголовков
         if($field['type'] == 'header'){
-            echo '<tr><td colspan="2"><h1 style="text-align: center">'.$field['label'].'</h1></td></tr>';
+            echo '<tr><td colspan="2"><div class="metabox-header">'.$field['label'].'</div></td></tr>';
             continue;
         }
         // Получаем значение если оно есть для этого поля

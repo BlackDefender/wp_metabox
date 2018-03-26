@@ -6,6 +6,17 @@ input[type='text']{
     display: block;
 }
 
+.metabox-header{
+    text-align: center;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 25px;
+    padding: 10px 0 5px;
+    line-height: 30px;
+}
+
+
+
 /* Image */
 .image-preview{
     width: 300px;
