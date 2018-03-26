@@ -210,8 +210,6 @@ function save_custom_meta_fields($post_id){
 					delete_post_meta($post_id, $field['id'], $old); // Если данных нет, удаляем мету.
 				}
 			}
-			
-            break;
         }
     }
 }
