@@ -18,7 +18,7 @@ function add_custom_meta_box(){
     // подключение metabox к конкретному посту
     global $post;
     global $meta_boxes;
-    foreach ($meta_boxes as $box){
+    foreach ($meta_boxes as $box_index => $box){
         if($post->post_type == $box['post_type']){
             if(isset($box['post_id'])){
                 if(is_array($box['post_id'])){
@@ -33,14 +33,13 @@ function add_custom_meta_box(){
             }
 
             add_meta_box(
-                $box['post_type'].'_meta_box', // Идентификатор(id)
+                $box['post_type'].'_meta_box_'.$box_index, // Идентификатор(id)
                 isset($box['title']) ? $box['title'] : 'Данные для страницы', // Заголовок области с мета-полями(title)
                 'show_custom_metabox', // Вызов(callback)
                 $box['post_type'], // Где будет отображаться наше поле, в нашем случае на главной странице
                 'normal',
                 'high',
                 $box['meta_fields']);
-            break;
         }
     }
 }
@@ -184,7 +183,6 @@ function save_custom_meta_fields($post_id){
 
 
     // определяем переменную с описанием полей
-    $fields = NULL;
     $post_type = get_post_type($post_id);
 
     global $meta_boxes;
@@ -197,29 +195,23 @@ function save_custom_meta_fields($post_id){
                     if($box['post_id'] != $post_id) continue;
                 }
             }
-	    if(isset($box['template']) && $box['template'] != get_post_meta( $post_id, '_wp_page_template', true )){
+			if(isset($box['template']) && $box['template'] != get_post_meta( $post_id, '_wp_page_template', true )){
                 continue;
             }
-            $fields = $box['meta_fields'];
+			foreach ($box['meta_fields'] as $field) {
+				// Тип header предназначен для вывода заголовков в таблице. Там нет никакой информации.
+				if($field['type'] == 'header') continue;
+
+				$old = get_post_meta($post_id, $field['id'], true); // Получаем старые данные (если они есть), для сверки
+				$new = $_POST[$field['id']];
+				if ($new && $new != $old) {  // Если данные новые
+					update_post_meta($post_id, $field['id'], $new); // Обновляем данные
+				} elseif ('' == $new && $old) {
+					delete_post_meta($post_id, $field['id'], $old); // Если данных нет, удаляем мету.
+				}
+			}
+			
             break;
-        }
-    }
-
-    if(is_null($fields)){
-        return;
-    }
-
-    // Если все отлично, прогоняем массив через foreach
-    foreach ($fields as $field) {
-        // Тип header предназначен для вывода заголовков в таблице. Там нет никакой информации.
-        if($field['type'] == 'header') continue;
-
-        $old = get_post_meta($post_id, $field['id'], true); // Получаем старые данные (если они есть), для сверки
-        $new = $_POST[$field['id']];
-        if ($new && $new != $old) {  // Если данные новые
-            update_post_meta($post_id, $field['id'], $new); // Обновляем данные
-        } elseif ('' == $new && $old) {
-            delete_post_meta($post_id, $field['id'], $old); // Если данных нет, удаляем мету.
         }
     }
 }
