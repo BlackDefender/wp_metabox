@@ -1,10 +1,11 @@
 jQuery(function($) {
 
     var file_frame;
+    var $document = $(document);
 
     /* Image */
-    $(document).on('click', '.add-image', function(e) {
-        var that = $(this);
+    $document.on('click', '.add-image', function() {
+        var $that = $(this);
         if (file_frame) file_frame.close();
         file_frame = wp.media({
             title: 'Добавить изображение',
@@ -17,14 +18,28 @@ jQuery(function($) {
             var attachment = file_frame.state().get('selection').first().toJSON();
             if(attachment.type !== 'image') return;
             var imageURL = getAttachedImageURL(attachment);
-            that.parent().find('input:hidden').attr('value', attachment.id);
-            that.css('background-image', 'url('+imageURL+')');
+            $that.parent().find('input:hidden').attr('value', attachment.id);
+            $that.css('background-image', 'url('+imageURL+')');
         });
         file_frame.open();
     });
+    $document.on('click', '.add-image .remove', function (e) {
+        e.stopPropagation();
+        $(this).parent().removeAttr('style').addClass('empty').parent().find('input[type="hidden"]').val('');
+    });
+    $document.on('mouseenter', '.add-image', function () {
+        var value = $(this).parent().find('input[type="hidden"]').val();
+        if(value === '' && !this.classList.contains('empty')){
+            this.classList.add('empty');
+        }else{
+            if(value !== '' && this.classList.contains('empty')){
+                this.classList.remove('empty');
+            }
+        }
+    });
 
     /* PDF */
-    $(document).on('click', '.add-pdf', function(e) {
+    $document.on('click', '.add-pdf', function(e) {
         e.preventDefault();
         var that = $(this);
         if (file_frame) file_frame.close();
@@ -45,7 +60,7 @@ jQuery(function($) {
     });
 
     /* Audio */
-    $(document).on('click', '.add-audio', function(e) {
+    $document.on('click', '.add-audio', function(e) {
         e.preventDefault();
         var that = $(this);
         if (file_frame) file_frame.close();
@@ -129,7 +144,7 @@ jQuery(function($) {
                         comboItemTemplateHTML += '<textarea></textarea>';
                         break;
                     case 'image':
-                        comboItemTemplateHTML += '<input type="hidden"><div class="image-preview add-image"></div>';
+                        comboItemTemplateHTML += '<input type="hidden"><div class="image-preview add-image"><div class="remove"></div></div>';
                         break;
                     case 'audio':
                         comboItemTemplateHTML += '<input type="hidden">' +
@@ -211,7 +226,7 @@ jQuery(function($) {
 
 
 
-        $(document).on('click', '.remove-combo-item', function(e) {
+        $document.on('click', '.remove-combo-item', function(e) {
             e.preventDefault();
             $(this).parents('li').animate({ opacity: 0, height: 0, width: 0 }, 300, function() {
                 $(this).remove();

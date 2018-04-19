@@ -19,9 +19,11 @@ input[type='text']{
 
 /* Image */
 .image-preview{
+    position: relative;
     width: 300px;
     height: 150px;
     max-width: 100%;
+    background-color: #eee;
     background-image: url('click-to-add-image.png');
     background-repeat: no-repeat;
     background-position: center;
@@ -29,6 +31,26 @@ input[type='text']{
     border: 1px solid #dddddd;
     cursor: pointer;
 }
+.image-preview .remove{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 25px;
+    height: 25px;
+    background: url("close.svg") center/contain no-repeat;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.image-preview:hover .remove{
+    opacity: 0.6;
+}
+.image-preview .remove:hover{
+    opacity: 1;
+}
+.image-preview.empty .remove{
+    visibility: hidden;
+}
+
 /* AUDIO, PDF */
 input.filename-input{
     width: calc(100% - 240px);

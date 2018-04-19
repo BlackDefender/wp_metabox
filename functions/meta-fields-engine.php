@@ -97,7 +97,7 @@ function show_custom_metabox($post, $meta_fields) {
                 ?>
                 <div class="wrap">
                     <input type="hidden" name="<?= $field['id'] ?>" value="<?= $meta ?>">
-                    <div class="image-preview add-image" style="<?= $style ?>"></div>
+                    <div class="image-preview add-image"<?= empty($style)? '': ' style="'.$style.'"'; ?>><div class="remove"></div></div>
                 </div>
                 <?php
                 break;
