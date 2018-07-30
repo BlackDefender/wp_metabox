@@ -20,6 +20,15 @@ function add_custom_meta_box(){
     global $meta_boxes;
     foreach ($meta_boxes as $box_index => $box){
         if($post->post_type == $box['post_type']){
+
+            if(isset($box['post_not_id'])){
+                if(is_array($box['post_not_id'])){
+                    if(in_array($post->ID, $box['post_not_id'])) continue;
+                }else{
+                    if($box['post_not_id'] == $post->ID) continue;
+                }
+            }
+
             if(isset($box['post_id'])){
                 if(is_array($box['post_id'])){
                     if(!in_array($post->ID, $box['post_id'])) continue;
@@ -28,15 +37,20 @@ function add_custom_meta_box(){
                 }
             }
 
-	    if(isset($box['template']) && $box['template'] != get_post_meta( $post->ID, '_wp_page_template', true )){
-                continue;
+            if(isset($box['template'])){
+                $currentPageTemplate = get_post_meta( $post->ID, '_wp_page_template', true );
+                if(is_array($box['template'])){
+                    if(!in_array($currentPageTemplate, $box['template'])) continue;
+                }else{
+                    if($box['template'] != $currentPageTemplate) continue;
+                }
             }
 
             add_meta_box(
                 $box['post_type'].'_meta_box_'.$box_index, // Идентификатор(id)
                 isset($box['title']) ? $box['title'] : 'Данные для страницы', // Заголовок области с мета-полями(title)
                 'show_custom_metabox', // Вызов(callback)
-                $box['post_type'], // Где будет отображаться наше поле, в нашем случае на главной странице
+                $box['post_type'], // Где будет отображаться наше поле
                 'normal',
                 'high',
                 $box['meta_fields']);
@@ -73,7 +87,7 @@ function show_custom_metabox($post, $meta_fields) {
                 break;
 
             case 'textarea':
-                echo '<textarea name="'.$field['id'].'" id="'.$field['id'].'" cols="100" rows="4">'.format_to_edit($meta).'</textarea>';
+                echo '<textarea name="'.$field['id'].'" id="'.$field['id'].'" cols="100" rows="4">'.format_to_edit($meta, true).'</textarea>';
                 break;
 
             case 'checkbox':
@@ -188,6 +202,15 @@ function save_custom_meta_fields($post_id){
     global $meta_boxes;
     foreach ($meta_boxes as $box){
         if($post_type == $box['post_type']){
+
+            if(isset($box['post_not_id'])){
+                if(is_array($box['post_not_id'])){
+                    if(in_array($post_id, $box['post_not_id'])) continue;
+                }else{
+                    if($box['post_not_id'] == $post_id) continue;
+                }
+            }
+
             if(isset($box['post_id'])){
                 if(is_array($box['post_id'])){
                     if(!in_array($post_id, $box['post_id'])) continue;
@@ -195,9 +218,16 @@ function save_custom_meta_fields($post_id){
                     if($box['post_id'] != $post_id) continue;
                 }
             }
-			if(isset($box['template']) && $box['template'] != get_post_meta( $post_id, '_wp_page_template', true )){
-                continue;
+
+            if(isset($box['template'])){
+                $currentPageTemplate = get_post_meta( $post_id, '_wp_page_template', true );
+                if(is_array($box['template'])){
+                    if(!in_array($currentPageTemplate, $box['template'])) continue;
+                }else{
+                    if($box['template'] != $currentPageTemplate) continue;
+                }
             }
+
 			foreach ($box['meta_fields'] as $field) {
 				// Тип header предназначен для вывода заголовков в таблице. Там нет никакой информации.
 				if($field['type'] == 'header') continue;
